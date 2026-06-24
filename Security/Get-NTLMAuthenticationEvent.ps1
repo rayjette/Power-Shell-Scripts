@@ -595,7 +595,7 @@ function Get-NTLMAuthenticationEvent {
             }
 
             if ($IncludeRaw) {
-                $output | Add-Member -NoteProperty RawEvent -NotePropertyValue $_
+                Add-Member -InputObject $output -NotePropertyName RawEvent -NotePropertyValue $_
             }
 
             $output
