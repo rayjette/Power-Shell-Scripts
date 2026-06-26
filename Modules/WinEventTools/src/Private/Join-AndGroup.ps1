@@ -1,54 +1,82 @@
 function Join-AndGroup {
     <#
     .SYNOPSIS
-        Combine multiple XPath expressions into a single AND expression.
+        Combines multiple conditional expressions using logical AND.
 
     .DESCRIPTION
-        Accepts one or more pre-built, parenthesized XPath condition expressions
-        and combines them using AND logic.
+        Accepts one or more pre-built and properly grouped expressions and joins
+        them together using AND logic.
 
-        The function performs a simple join operation using the "AND" operator.
+        The function performs a simple join operation by inserting " AND "
+        between each expression.
 
-        If multiple expressions are provided, they are joined with " AND " between them.
+        - If multiple expressions are provided, they are combined with " AND ".
+        - If a single expression is provided, it is returned unchanged.
+        - The function does not modify, validate, or interpret the expressions.
+        - It assumes each input expression is already complete and properly grouped.
 
-        If a single expression is provided, it is returned unchanged without modification.
-
-        This function does not add additional parentheses and assumes that each
-        input expression is already properly grouped.
-
-        The function does not modify the internal structure of the
-        expression and only joins them using the "AND" operator.
-        
-        This function is schema-agnostic and does not construct or interpret XPath
-        fields.  It operates only on fully-formed expression strings.
+        This makes the function flexible and reusable for constructing logical
+        conditions in various contexts (e.g., filtering, query building, rule evaluation).
 
     .PARAMETER Expression
-        One or more XPath condition expressions.
+        One or more pre-built expressions to combine.
 
-        Each expression must already be a valid and properly grouped XPath fragment,
-        such as:
-            (EventID=4624 OR EventID=4625)
-            (Data[@Name='TargetUserName']='jsmith')
+        Each expression should already be valid and logically grouped if needed,
+        for example:
+            (Status = 'Active')
+            (Age > 30 OR Role = 'Admin')
+            (Enabled -eq $true)
 
     .EXAMPLE
         Join-AndGroup -Expression @(
-            "(Data[@Name='TargetUserName']='jsmith' OR Data[@Name='TargetUserName']='mjones')",
-            "(Data[@Name='LogonType']=10)"
+            "(Status = 'Active')",
+            "(Role = 'Admin')"
         )
 
         Output:
-            (Data[@Name='TargetUserName']='jsmith' OR Data[@Name='TargetUserName']='mjones') AND (Data[@Name='LogonType']=10)
+            (Status = 'Active') AND (Role = 'Admin')
 
     .EXAMPLE
         Join-AndGroup -Expression @(
-            "(Data[@Name='LogonType']=10)"
+            "(Age > 30 OR Role = 'Admin')",
+            "(Enabled = true)"
         )
-            Output:
-                (Data[@Name='LogonType']=10)
+
+        Output:
+            (Age > 30 OR Role = 'Admin') AND (Enabled = true)
+
+    .EXAMPLE
+        # PowerShell-style expressions
+        Join-AndGroup -Expression @(
+            "($User.Enabled -eq $true)",
+            "($User.LastLogin -gt (Get-Date).AddDays(-30))"
+        )
+
+        Output:
+            ($User.Enabled -eq $true) AND ($User.LastLogin -gt (Get-Date).AddDays(-30))
+
+    .EXAMPLE
+        # SQL-style expressions
+        Join-AndGroup -Expression @(
+            "(FirstName = 'John' OR FirstName = 'Jane')",
+            "(IsActive = 1)"
+        )
+
+        Output:
+            (FirstName = 'John' OR FirstName = 'Jane') AND (IsActive = 1)
+
+    .EXAMPLE
+        # Single expression (no change)
+        Join-AndGroup -Expression @(
+            "(IsActive = 1)"
+        )
+
+        Output:
+            (IsActive = 1)
 
     .OUTPUTS
         System.String
-        Returns a single XPath expression string joined using AND logic.
+        A single string containing all expressions joined with AND.
     #>
 
     param (
