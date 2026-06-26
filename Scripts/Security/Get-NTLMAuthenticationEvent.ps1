@@ -1,5 +1,3 @@
-#Requires -RunAsAdministrator
-
 function Get-NTLMAuthenticationEvent {
 
     <#
