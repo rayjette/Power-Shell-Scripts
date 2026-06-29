@@ -78,7 +78,6 @@ function Join-OrGroup {
         A single string containing the expressions combined with OR logic
         and wrapped in parentheses.
     #>
-``
 
     param(
         [string[]]$Expression
