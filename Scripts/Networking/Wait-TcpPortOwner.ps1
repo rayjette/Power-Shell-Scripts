@@ -1,5 +1,98 @@
 function Wait-TcpPortOwner {
+    <#
+    .SYNOPSIS
+        Waits for a TCP connection matching specified criteria and returns
+        the owning process, service, and connection details.
 
+    .DESCRIPTION
+        Wait-TcpPortOwner continuously monitors active TCP connections until a 
+        connection matching the supplied filter criteria is detected.
+
+        At least one of the following filters must be specified:
+
+        - LocalAddress
+        - LocalPort
+        - RemoteAddress
+        - RemotePort
+
+        When a matching connection is found, the function returns information
+        about the owning process, associated services, executable path,
+        connection state, and optionally the process command line.
+
+        This function is useful for troubleshooting, identifying which process
+        initiates network activity, monitoring application startup behavior,
+        and validating network communications.
+
+    .PARAMETER LocalAddress
+        Specifies the local IP address that the connection must match.
+
+    .PARAMETER LocalPort
+        Specifies the local TCP port that the connection must match.
+
+    .PARAMETER RemoteAddress
+        Specifies the remote IP address that the connection must match.
+    
+    .PARAMETER RemotePort
+        Specifies the remote TCP port that the connection must match.
+
+    .PARAMETER PollingInterval
+        Specifies the interval, in milliseconds, between connection scans.
+
+        Default: 1000
+
+    .PARAMETER TimeoutSeconds
+        Specifies the maximum amount of time to wait before terminating with
+        an error.
+
+    .PARAMETER IncludeCommandLine
+        Includes the process command line in the output.
+
+        Retrieving process command lines may require elevated privileges.
+
+    .OUTPUTS
+        System.Management.Automation.PSCustomObject
+
+        Returns a custom object containing process, service, and connection
+        information about the detected TCP connection.
+
+
+    .EXAMPLE
+        Wait-TcpPortOwner -RemotePort 443
+
+        Waits until any TCP connection to remote port 443 is detected and
+        returns information about the owning process.
+
+    .EXAMPLE
+        Wait-TcpPortOwner -LocalPort 8443 -TimeoutSeconds 30
+
+        Waits up to 30 seconds for a connection using local port 8443.
+
+    .EXAMPLE
+        Wait-TcpPortOwner -RemoteAddress 10.10.10.5
+
+        Waits until a connection to the specified remote host is observed.
+
+    .EXAMPLE
+        Wait-TcpPortOwner `
+            -RemotePort 443 `
+            -IncludeCommandLine `
+            -Verbose
+
+        Waits for HTTPS traffic and returns detailed process information,
+        including the command line.
+
+    .NOTES
+        Author: Raymond Jette
+
+        The function uses Get-NetTCPConnection to identify matching
+        connections and CIM/WMI classes to retrieve process and service
+        information.
+
+        Requires:
+        - Windows
+        - NetTCPIP PowerShell module
+    #>
+    
     [CmdletBinding()]
     param(
         [Parameter()]
