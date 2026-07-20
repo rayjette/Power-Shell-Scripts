@@ -171,9 +171,11 @@ function Get-NTLMAuthenticationEvent {
     [CmdletBinding(DefaultParameterSetName = 'Days')]
     param (
         [Parameter(ParameterSetName = 'Days')]
+        [ValidateRange(1, 3650)]
         [int]$Days = 7,
 
         [Parameter(ParameterSetName = 'Hours')]
+        [ValidateRange(1, 87600)]
         [int]$Hours,
 
         [Parameter(
@@ -316,6 +318,12 @@ function Get-NTLMAuthenticationEvent {
         }
 
 
+        if ($PSCmdlet.ParameterSetName -eq 'TimeRange') {
+            if ($StartTime -gt $EndTime) {
+                throw 'StartTime must be earlier than EndTime.'
+            }
+        }
+
         if ($PSCmdlet.ParameterSetName -eq 'Days') {
 
             $EndTime = Get-Date
@@ -379,7 +387,7 @@ function Get-NTLMAuthenticationEvent {
                     # Resolve process ID
                     $processId = Resolve-IntValue $map.ProcessId
 
-                    if (-not $processId) {
+                    if ($null -eq $processId) {
                         $processId = Resolve-IntValue $map.CallerPID
                     }
 
@@ -408,7 +416,7 @@ function Get-NTLMAuthenticationEvent {
                     # Resolve process ID
                     $processId = Resolve-IntValue $map.ProcessId
 
-                    if (-not $processId) {
+                    if ($null -eq $processId) {
                         $processId = Resolve-IntValue $map.CallerPID
                     }
 
@@ -449,7 +457,7 @@ function Get-NTLMAuthenticationEvent {
                     # Resolve process ID
                     $processId = Resolve-IntValue $map.ProcessId
 
-                    if (-not $processId) {
+                    if ($null -eq $processId) {
                         $processId = Resolve-IntValue $map.CallerPID
                     }
 
@@ -489,7 +497,7 @@ function Get-NTLMAuthenticationEvent {
                     # Resolve process ID 
                     $processId = Resolve-IntValue $map.ProcessId
 
-                    if (-not $processId) {
+                    if ($null -eq $processId) {
                         $processId = Resolve-IntValue $map.CallerPID
                     }
 
