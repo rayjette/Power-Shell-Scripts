@@ -61,7 +61,7 @@ function Get-NTLMAuthenticationEvent {
         contained in the NTLM event.  This represents the identity being
         validated, not necessarily the calling context.
 
-        Supports case-insensitive matching and wildcard patters.
+        Supports case-insensitive matching and wildcard patterns.
 
         Examples:
             -User "DOMAIN\User1"
