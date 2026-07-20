@@ -537,9 +537,9 @@ function Get-NTLMAuthenticationEvent {
             # Result mapping
             $eventType = switch ($eventId) {
                 8001    { 'Outgoing NTLM Authentication - Audit' }
-                8002    { 'Outgoing NTLM Authentication - Blocked' }
+                8002    { 'Outgoing NTLM Authentication - Would Be Blocked' }
                 8003    { 'Incoming NTLM Authentication - Audit' }
-                8004    { 'Incoming NTLM Authentication - Blocked' }
+                8004    { 'Incoming NTLM Authentication - Would Be Blocked' }
                 default { 'Unknown' }
             }
 
