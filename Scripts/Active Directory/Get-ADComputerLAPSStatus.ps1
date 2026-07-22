@@ -230,14 +230,14 @@ function Get-ADComputerLAPSStatus {
 
             [PSCustomObject]@{
                 ComputerName              = $computer.Name
-                DistinguishedName          = $computer.DistinguishedName
-                ComputerEnabled                    = $computer.Enabled
-                OperatingSystem            = $computer.OperatingSystem
-                LAPSStatus                 = $lapsStatus
-                LAPSProvider               = $lapsProviders
-                WindowsLAPSExpirationTime  = $windowsLAPSExpirationTime
+                DistinguishedName         = $computer.DistinguishedName
+                ComputerEnabled           = $computer.Enabled
+                OperatingSystem           = $computer.OperatingSystem
+                LAPSStatus                = $lapsStatus
+                LAPSProvider              = $lapsProviders
+                WindowsLAPSExpirationTime = $windowsLAPSExpirationTime
                 LegacyLAPSExpirationTime  = $legacyLAPSExpirationTime
-                Reason                     = $reasons
+                Reason                    = $reasons
             }
         }
     }
