@@ -70,6 +70,16 @@ function Get-NTLMAuthenticationEvent {
     .PARAMETER IncludeRaw
         Includes the original event record in the output.
 
+    .PARAMETER MaxEvents
+        Specifies the maximum number of NTLM authentication events to retrieve.
+
+        Events are returned in reverse chronological order (newest first),
+        consistent with Get-WinEvent.  When specified, event retrieval stops
+        after the requested number of events has been processed.
+
+        By default, all matching events within the requested time range are
+        retrieved. 
+
     .OUTPUTS
         Objects containing normalized NTLM authentication fields along with
         an EventData property that includes all original event fields.
@@ -154,7 +164,15 @@ function Get-NTLMAuthenticationEvent {
 
         Identifies the most frequently used NTLM accounts. 
 
+    .EXAMPLE
+        Get-NTLMAuthenticationEvent -Hours 24 -MaxEvents 100
+
+        Retrieves at most the 100 most recent NTLM authentication events
+        from the last 24 hours.
+
     .NOTES
+        Author: Raymond Jette
+        
         The Microsoft-Windows-NTLM/Operational log must be enabled for
         this function to return data.
 
@@ -196,7 +214,10 @@ function Get-NTLMAuthenticationEvent {
 
         [string[]]$User,
 
-        [switch]$IncludeRaw
+        [switch]$IncludeRaw,
+
+        [ValidateRange(1, [int]::MaxValue)]
+        [int]$MaxEvents
     )
 
     begin {
@@ -351,11 +372,18 @@ function Get-NTLMAuthenticationEvent {
             EndTime     = $EndTime
         }
 
+        $winEventParams = @{
+            FilterHashtable = $filter
+        }
+
+        if ($PSBoundParameters.ContainsKey('MaxEvents')) {
+            $winEventParams.MaxEvents = $MaxEvents
+        }
     }
 
     process {
 
-        Get-WinEvent -FilterHashtable $filter | ForEach-Object {
+        Get-WinEvent @winEventParams | ForEach-Object {
 
             # System metadata
             $timeCreated = $_.TimeCreated
