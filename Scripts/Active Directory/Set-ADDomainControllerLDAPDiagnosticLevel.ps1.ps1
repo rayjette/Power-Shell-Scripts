@@ -95,7 +95,7 @@ Function Set-ADDomainControllerLDAPInterfaceDiagnosticLevel {
             $currentLevel = 0
         }
 
-        if ($currnetLevel -eq $Level) {
+        if ($currentLevel -eq $Level) {
             Write-Verbose "LDAP Interface Events Diagnostic level is already set to $Level."
         }
         elseif ($PSCmdlet.ShouldProcess(
