@@ -611,14 +611,17 @@ function Get-NTLMAuthenticationEvent {
                 }
             }
 
-            # Final clean output object
             $output = [PSCustomObject]@{
                 TimeCreated  = $timeCreated
+
+                computer     = $computer
+
                 EventId      = $eventId
                 EventType    = $eventType
 
                 User         = $normalized.User
                 Domain       = $normalized.Domain
+                
                 Source       = $normalized.Source
                 Target       = $normalized.Target
 
