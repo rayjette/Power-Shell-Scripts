@@ -5,11 +5,21 @@ function Get-NTLMAuthenticationEvent {
         Retrieves NTLM authentication events from the local system.
 
     .DESCRIPTION
-        Retrieves NTLM authentication events from the 
-        Microsoft-Windows-NTLM/Operational log on the local system
-        and returns them as PowerShell objects.
+        This function supports the classic NTLM auditing event schema:
+
+            Event ID 8001 - Outgoing NTLM authentication audit
+            Event ID 8002 - Outgoing NTLM authentication that would be blocked
+            Event ID 8003 - Incoming NTLM authentication audit
+            Event ID 8004 - Incoming NTLM authentication that would be blocked
 
         NTLM auditing must be enabled for this command to return data.
+
+        This function is considered legacy and is maintained for compatibility
+        with existing workflows.
+
+        The function will receive bug fixes and compatibility updates only.
+        New NTLM event support, correlation, and remediation features are being
+        developed separately in a new NTLM discovery tool.
 
         Filtering parameters (User, Target, Source) support case-insensitive
         matching and PowerShell wildcard patterns.
@@ -79,6 +89,13 @@ function Get-NTLMAuthenticationEvent {
 
         By default, all matching events within the requested time range are
         retrieved. 
+
+    .PARAMETER SuppressLegacyWarning
+        Suppresses the warning message indicating that this function is
+        considered legacy.
+
+        This parameter is intended for automation scenarios where the
+        legacy notification is not desired.
 
     .OUTPUTS
         Objects containing normalized NTLM authentication fields along with
@@ -170,14 +187,32 @@ function Get-NTLMAuthenticationEvent {
         Retrieves at most the 100 most recent NTLM authentication events
         from the last 24 hours.
 
+    .EXAMPLE
+        Get-NTLMAuthenticationEvent -SuppressLegacyWarning
+
+        Retrieves NTLM authentication events without displaying the legacy
+        command warning message.
+
+        This is useful when using the command in automation or scheduled
+        tasks where warning messages are not desired.
+        
     .NOTES
         Author: Raymond Jette
+
+        Status:
+            Legacy
         
         The Microsoft-Windows-NTLM/Operational log must be enabled for
         this function to return data.
 
         NTLM auditing policies may also need to be configured depending
         on the environment.
+
+        This fucntion supports the classic NTLM auditing event schema
+        (Event IDs 8001-8004).
+
+        New NTLM event support, correlation, and remediation features are
+        being developed separately in a new NTLM discovery framework.
 
         ProcessId is derived from the event ProcessId field when present,
         or CallerPID when ProcessId is not populated.
@@ -217,7 +252,9 @@ function Get-NTLMAuthenticationEvent {
         [switch]$IncludeRaw,
 
         [ValidateRange(1, [int]::MaxValue)]
-        [int]$MaxEvents
+        [int]$MaxEvents,
+
+        [switch]$SuppressLegacyWarning
     )
 
     begin {
@@ -338,6 +375,14 @@ function Get-NTLMAuthenticationEvent {
             return $null
         }
 
+
+        if (-not $SuppressLegacyWarning) {
+            Write-Warning @"
+Get-NTLMAuthenticationEvent is a legacy command.
+It supports classic NTLM audit events (8001-8004) only.
+New NTLM discovery capabilities are being developed separately.
+"@
+        }
 
         if ($PSCmdlet.ParameterSetName -eq 'TimeRange') {
             if ($StartTime -gt $EndTime) {
